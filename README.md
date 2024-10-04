@@ -1,5 +1,5 @@
 # ExPLoRA
-**[Website (Coming Soon)](https://github.com/samar-khanna/ExPLoRA/)** | 
+**[Website](https://github.com/samar-khanna/ExPLoRA/)** | 
 **[Paper](https://arxiv.org/abs/2406.10973)** 
 
 This is the official repository for the paper 
