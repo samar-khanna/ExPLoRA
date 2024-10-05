@@ -11,9 +11,6 @@ Authors:
 [David B. Lobell](https://earth.stanford.edu/people/david-lobell#gs.5vndff), 
 [Stefano Ermon](https://cs.stanford.edu/~ermon/).
 
-
-_Coming soon, stay tuned..._
-
 ## Citation
 If you find our project helpful, please cite our paper:
 ```

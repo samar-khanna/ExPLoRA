@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="ExPLoRA: Parameter-Efficient Extended Pre-training to Adapt Vision Transformers under Domain Shifts">
+  <meta name="keywords" content="Satellite Imagery, foundation models, lora, PEFT, ExPLoRA, explora">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ExPLoRA</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script> -->
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <!-- <a class="navbar-item" href="https://keunhong.com">
+      <span class="icon">
+          <i class="fas fa-home"></i>
+      </span>
+      </a> -->
+
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">
+          More Research
+        </a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://sustainlab-group.github.io/SatMAE/">
+            SatMAE
+          </a>
+          <a class="navbar-item" href="https://samar-khanna.github.io/DiffusionSat/">
+            DiffusionSat
+          </a>
+          <a class="navbar-item" href="https://github.com/facebookresearch/dinov2">
+            DinoV2
+          </a>
+          <!-- <a class="navbar-item" href="https://latentfusion.github.io">
+            LatentFusion
+          </a>
+          <a class="navbar-item" href="https://photoshape.github.io">
+            PhotoShape -->
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">ExPLoRA: Parameter-Efficient Extended Pre-training to Adapt Vision Transformers under Domain Shifts</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://www.samarkhanna.com/">Samar Khanna*</a>,</span>
+            <span class="author-block">
+              <a href="https://scholar.google.co.uk/citations?user=WZ-NhOkAAAAJ&hl">Medhanie Irgau</a>,</span>
+            <span class="author-block">
+              <a href="https://earth.stanford.edu/people/david-lobell#gs.5vndff">David B. Lobell</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://cs.stanford.edu/~ermon/">Stefano Ermon</a>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Stanford University</span>
+            <!-- <span class="author-block"><sup>2</sup>Google Research</span> -->
+          </div>
+
+          <div class="is-size-6 publication-authors">
+            <span class="author-block">*Correspondence to samarkhanna [at] cs.stanford.edu.</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2406.10973"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2406.10973"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+<!--              <span class="link-block">-->
+<!--                <a href="https://slideslive.com/39018155/diffusionsat-a-generative-foundation-model-for-satellite-imagery"-->
+<!--                   class="external-link button is-normal is-rounded is-dark">-->
+<!--                  <span class="icon">-->
+<!--                      <i class="fab fa-youtube"></i>-->
+<!--                  </span>-->
+<!--                  <span>Video</span>-->
+<!--                </a>-->
+<!--              </span>-->
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/samar-khanna/ExPLoRA"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Model Checkpoints Link. -->
+<!--              <span class="link-block">-->
+<!--                <a href="https://zenodo.org/communities/diffusionsat"-->
+<!--                   class="external-link button is-normal is-rounded is-dark">-->
+<!--                  <span class="icon">-->
+<!--                      <i class="far fa-file-archive"></i>-->
+<!--                  </span>-->
+<!--                  <span>Zenodo</span>-->
+<!--                  </a>-->
+<!--              </span>-->
+              <!-- Dataset Link. -->
+<!--              <span class="link-block">-->
+<!--                <a href="https://purl.stanford.edu/vg497cb6002"-->
+<!--                   class="external-link button is-normal is-rounded is-dark">-->
+<!--                  <span class="icon">-->
+<!--                      <i class="far fa-images"></i>-->
+<!--                  </span>-->
+<!--                  <span>fMoW-Sentinel Data</span>-->
+<!--                  </a>-->
+<!--              </span>-->
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <img src="static/images/explora_arch.png" height="100%">
+    </img>
+      <h2 class="subtitle has-text-centered">
+        ExPLoRA creates state-of-the-art foundation models for new domains by extending unsupervised pre-training of ViTs (like DinoV2 and MAE) in a parameter-efficient manner.
+      </h2>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <video id="teaser" autoplay muted loop playsinline height="100%">
+        <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/teaser.mp4"
+                type="video/mp4">
+      </video>
+      <h2 class="subtitle has-text-centered">
+        <span class="dnerf">Nerfies</span> turns selfie videos from your phone into
+        free-viewpoint
+        portraits.
+      </h2>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero is-light is-small">
+  <div class="hero-body">
+    <div class="container">
+      <div id="results-carousel" class="carousel results-carousel">
+        <div class="item item-steve">
+          <video poster="" id="steve" autoplay controls muted loop playsinline height="100%">
+            <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/steve.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-chair-tp">
+          <video poster="" id="chair-tp" autoplay controls muted loop playsinline height="100%">
+            <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/chair-tp.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-shiba">
+          <video poster="" id="shiba" autoplay controls muted loop playsinline height="100%">
+            <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/shiba.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-fullbody">
+          <video poster="" id="fullbody" autoplay controls muted loop playsinline height="100%">
+            <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/fullbody.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-blueshirt">
+          <video poster="" id="blueshirt" autoplay controls muted loop playsinline height="100%">
+            <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/blueshirt.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-mask">
+          <video poster="" id="mask" autoplay controls muted loop playsinline height="100%">
+            <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/mask.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-coffee">
+          <video poster="" id="coffee" autoplay controls muted loop playsinline height="100%">
+            <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/coffee.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+        <div class="item item-toby">
+          <video poster="" id="toby" autoplay controls muted loop playsinline height="100%">
+            <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/toby2.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Parameter-efficient fine-tuning (PEFT) techniques such as low-rank adaptation
+            (LoRA) can effectively adapt large pre-trained foundation models to downstream
+            tasks using only a small fraction (0.1%-10%) of the original trainable weights. An
+            under-explored question of PEFT is in extending the pre-training phase without
+            supervised labels; that is, can we adapt a pre-trained foundation model to a new
+            domain via efficient self-supervised pre-training on this new domain? In this work,
+            we introduce ExPLoRA, a highly effective technique to improve transfer learning
+            of pre-trained vision transformers (ViTs) under domain shifts. Initializing a ViT
+            with pre-trained weights on large, natural-image datasets such as from DinoV2
+            or MAE, ExPLoRA continues the unsupervised pre-training objective on a new
+            domain, unfreezing 1-2 pre-trained ViT blocks and tuning all other layers with
+            LoRA. We then fine-tune the resulting model only with LoRA on this new domain
+            for supervised learning. Our experiments demonstrate state-of-the-art results on
+            satellite imagery, even outperforming fully pre-training and fine-tuning ViTs. Using
+            the DinoV2 training objective, we demonstrate up to 7.5% improvement in linear
+            probing top-1 accuracy on downstream tasks while using <10% of the number
+            of parameters that are used in prior fully-tuned state-of-the art approaches. Our
+            ablation studies confirm the efficacy of our approach over other baselines, including
+            PEFT and unfreezing more ViT blocks.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Paper video. -->
+    <!-- <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div> -->
+    <!--/ Paper video. -->
+  </div>
+</section>
+
+<section class="section" id="Motivation">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Motivation</h2>
+    <img src="static/images/explora_explainer.png" height="100%">
+    <div class="subtitle has-text-centered">
+    </div>
+    <div class="content has-text-justified">
+      <p>
+        ExPLoRA creates effective visual foundation models for new domains inexpensively, given existing pre-trained weights.
+      </p>
+      <p>
+        Consider two faily different image domains, <i>D<sub>S</sub></i> and <i>D<sub>T</sub></i> (such as natural images vs satellite images).
+        On the <b>left</b>, the traditional approach is to pre-train foundation models from scratch for each domain, yielding weights <i>W<sub>D<sub>S</sub></sub></i> and <i>W<sub>D<sub>T</sub></sub></i>.
+        Then, these weights are fine-tuned via supervised learning on target datasets <i>i</i> to yield weights <i>&Delta;<sub>s<sub>i</sub></sub></i> and <i>&Delta;<sub>t<sub>i</sub></sub></i>
+        for domains <i>D<sub>S</sub></i> and <i>D<sub>T</sub></i>, respectively. Pre-training for each new domain is very expensive, and can require large amounts of compute and data.
+      </p>
+      <p>
+        ExPLoRA challenges this paradigm. On the <b>right</b>, our method initializes with <i>W<sub>D<sub>S</sub></sub></i> and
+        learns unsupervised weights <i>&Delta;<sub>D<sub>T</sub></sub></i> for domain <i>D<sub>T</sub></i> in a parameter-efficient manner.
+        These new weights <i>&Delta;<sub>D<sub>T</sub></sub></i> are then used for fine-tuning on specific datasets <i>t<sub>i</sub></i>, resulting in even better downstream performance than <i>W<sub>D<sub>T</sub></sub></i>.
+      </p>
+
+      <p>
+        Our key insight is to find the right combination of parameter-efficient methods that work for <i>unsupervised</i> pre-training, rather than traditional supervised fine-tuning PEFT methods.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="Method">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Method</h2>
+
+    <p>
+      ExPLoRA works on a ViT with <i>L</i> layers as follows:
+    <ol>
+    <li>Initialize a frozen ViT with pre-trained weights <i>W<sub>D<sub>S</sub></sub></i> from source domains <i>D<sub>S</sub></i> (e.g., DinoV2 or MAE weights from natural images). </li>
+    <li>Unfreeze all parameters of a subset <i>U</i> of the <i>L</i> ViT blocks (usually just 1 or 2 blocks).</li>
+    <li>Apply LoRA with rank <i>r</i> on the <i>Q</i> and <i>V</i> weights in attention layers of all the remaining <i>L - U</i> frozen blocks. </li>
+    <li>Train these unfrozen parameters (collectively denoted as <i>&Delta;<sub>D<sub>T</sub></sub></i>) on an unlabeled dataset <i>X<sub>D<sub>T</sub></sub></i> of the target domain <i>D<sub>T</sub></i>.
+    Use the same unsupervised objective as what was used for <i>W<sub>D<sub>S</sub></sub></i> (e.g., DinoV2 or MAE).</li>
+  </ol>
+
+    The output of this process is a new pre-trained foundation model for the target domain <i>D<sub>T</sub></i>,
+    that can then be used for feature extraction or for further fine-tuning on downstream tasks!
+
+    </p>
+
+    <p>
+      Since we only train a small fraction (5-10%) of the original ViT weights, ExPLoRA can create powerful foundation models for new domains using only 4 A4000-16GB GPUs!
+      For comparison, pre-training a ViT-L DinoV2 from scratch required 96 A100-80GB GPUs!
+    </p>
+
+  </div>
+</section>
+
+<!--
+<section class="section">
+  <div class="container is-max-desktop">
+
+    <div class="columns is-centered">
+
+      <div class="column">
+        <div class="content">
+          <h2 class="title is-3">Visual Effects</h2>
+          <p>
+            Using <i>nerfies</i> you can create fun visual effects. This Dolly zoom effect
+            would be impossible without nerfies since it would require going through a wall.
+          </p>
+          <video id="dollyzoom" autoplay controls muted loop playsinline height="100%">
+            <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/dollyzoom-stacked.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+      </div>
+
+      <div class="column">
+        <h2 class="title is-3">Matting</h2>
+        <div class="columns is-centered">
+          <div class="column content">
+            <p>
+              As a byproduct of our method, we can also solve the matting problem by ignoring
+              samples that fall outside of a bounding box during rendering.
+            </p>
+            <video id="matting-video" controls playsinline height="100%">
+              <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/matting.mp4"
+                      type="video/mp4">
+            </video>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Animation</h2>
+
+        <h3 class="title is-4">Interpolating states</h3>
+        <div class="content has-text-justified">
+          <p>
+            We can also animate the scene by interpolating the deformation latent codes of two input
+            frames. Use the slider here to linearly interpolate between the left frame and the right
+            frame.
+          </p>
+        </div>
+        <div class="columns is-vcentered interpolation-panel">
+          <div class="column is-3 has-text-centered">
+            <img src="https://homes.cs.washington.edu/~kpar/nerfies/images/interpolate_start.jpg"
+                 class="interpolation-image"
+                 alt="Interpolate start reference image."/>
+            <p>Start Frame</p>
+          </div>
+          <div class="column interpolation-video-column">
+            <div id="interpolation-image-wrapper">
+              Loading...
+            </div>
+            <input class="slider is-fullwidth is-large is-info"
+                   id="interpolation-slider"
+                   step="1" min="0" max="100" value="0" type="range">
+          </div>
+          <div class="column is-3 has-text-centered">
+            <img src="https://homes.cs.washington.edu/~kpar/nerfies/images/interpolate_end.jpg"
+                 class="interpolation-image"
+                 alt="Interpolation end reference image."/>
+            <p class="is-bold">End Frame</p>
+          </div>
+        </div>
+        <br/>
+
+        <h3 class="title is-4">Re-rendering the input video</h3>
+        <div class="content has-text-justified">
+          <p>
+            Using <span class="dnerf">Nerfies</span>, you can re-render a video from a novel
+            viewpoint such as a stabilized camera by playing back the training deformations.
+          </p>
+        </div>
+        <div class="content has-text-centered">
+          <video id="replay-video"
+                 controls
+                 muted
+                 preload
+                 playsinline
+                 width="75%">
+            <source src="https://homes.cs.washington.edu/~kpar/nerfies/videos/replay.mp4"
+                    type="video/mp4">
+          </video>
+        </div>
+
+      </div>
+    </div>
+
+
+    <div class="columns is-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Related Links</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            There's a lot of excellent work that was introduced around the same time as ours.
+          </p>
+          <p>
+            <a href="https://arxiv.org/abs/2104.09125">Progressive Encoding for Neural Optimization</a> introduces an idea similar to our windowed position encoding for coarse-to-fine optimization.
+          </p>
+          <p>
+            <a href="https://www.albertpumarola.com/research/D-NeRF/index.html">D-NeRF</a> and <a href="https://gvv.mpi-inf.mpg.de/projects/nonrigid_nerf/">NR-NeRF</a>
+            both use deformation fields to model non-rigid scenes.
+          </p>
+          <p>
+            Some works model videos with a NeRF by directly modulating the density, such as <a href="https://video-nerf.github.io/">Video-NeRF</a>, <a href="https://www.cs.cornell.edu/~zl548/NSFF/">NSFF</a>, and <a href="https://neural-3d-video.github.io/">DyNeRF</a>
+          </p>
+          <p>
+            There are probably many more by the time you are reading this. Check out <a href="https://dellaert.github.io/NeRF/">Frank Dellart's survey on recent NeRF papers</a>, and <a href="https://github.com/yenchenlin/awesome-NeRF">Yen-Chen Lin's curated list of NeRF papers</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+-->
+
+<style>
+  /* Table with borders on top and bottom */
+  .bordered-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .bordered-table, .bordered-table th, .bordered-table td {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    border-left: none;
+    border-right: none;
+  }
+
+  /* Table without borders (for the images) */
+  .no-border-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .no-border-table, .no-border-table th, .no-border-table td {
+    border: none;
+  }
+</style>
+
+<section class="section" id="Results">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Results</h2>
+
+    <p>
+      Using ExPLoRA, we are able to create state-of-the-art foundation models for satellite images, outperforming all
+      prior fully-pretrained models on the <a href="https://github.com/fMoW">fMoW-RGB</a> benchmark.
+
+      <table class="bordered-table">
+      <thead>
+        <tr>
+          <th style="text-align: center;">Method</th>
+          <th style="text-align: center;">Backbone</th>
+          <th style="text-align: center;">#Pre-train Params</th>
+          <th style="text-align: center;">Top 1 Acc.</th>
+        </tr>
+      </thead>
+      <tbody>
+<!--        <tr>-->
+<!--          <td style="text-align: center;">GASSL</td>-->
+<!--          <td style="text-align: center;">ResNet</td>-->
+<!--          <td style="text-align: center;">68.32</td>-->
+<!--        </tr>-->
+        <tr>
+          <td style="text-align: center;">SatMAE</td>
+          <td style="text-align: center;">ViT-L</td>
+          <td style="text-align: center;">303M</td>
+          <td style="text-align: center;">65.94</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">ScaleMAE</td>
+          <td style="text-align: center;">ViT-B</td>
+          <td style="text-align: center;">86M</td>
+          <td style="text-align: center;">67.30</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">CrossScaleMAE</td>
+          <td style="text-align: center;">ViT-B</td>
+          <td style="text-align: center;">86M</td>
+          <td style="text-align: center;">69.20</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">DinoV2</td>
+          <td style="text-align: center;">ViT-L</td>
+          <td style="text-align: center;">-</td>
+          <td style="text-align: center;">69.00</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">Ours</td>
+          <td style="text-align: center;">ViT-B</td>
+          <td style="text-align: center;">9M</td>
+          <td style="text-align: center;"><b>75.11</b></td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">Ours</td>
+          <td style="text-align: center;">ViT-L</td>
+          <td style="text-align: center;">18M</td>
+          <td style="text-align: center;"><b>77.48</b></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="subtitle has-text-centered">
+        Table 1: Linear probing results on fMoW-RGB.
+    </div>
+
+    Here, we show a sneak-peek of our results on the fMoW-RGB validation dataset. In Table 1, #Pre-train parameters refers
+    to the number of trainable parameters used on the new domain (i.e. satellite images of fMoW-RGB).
+    We show that our ExPLoRA-tuned ViT learns strong unsupervised representations-- with linear probing, we achieve
+    a large 8.28% improvement in top 1 accuracy over prior state-of-the-art fully pre-trained backbones,
+    while using a fraction of the ViT parameters.
+
+    </p>
+
+    <p>
+      For further results on satellite image datasets and on the WILDS benchmark, please read our paper!
+    </p>
+
+  </div>
+</section>
+
+
+<section class="section" id="Analysis">
+  <div class="container is-max-desktop content">
+    <h2 class="title">Analysis</h2>
+
+    <p>
+      A key design choice of ExPLoRA is to fully train a small subset of the ViT layers (i.e. the unfrozen block) while
+      applying low-rank updates to the remaining frozen layers. Why is this combination so effective?
+      We conduct experiments to analyze the output feature maps of each block of the ViT on the target domain. On these feature maps, we:
+      <ol>
+    <li>Apply PCA to calculate the mean and variance of the eigenvalues </li>
+    <li>Train linear classifiers to predict the relative position of each patch </li>
+    <li>Train linear classifiers to predict the image class from each patch</li>
+  </ol>
+    </p>
+
+    <table class="no-border-table">
+    <tr>
+    <td><img src="static/images/blockwise_eigenvalues.png" alt="Mean Eigenvalues" width="300"></td>
+    <td><img src="static/images/blockwise_pos_accuracy.png" alt="Linear probing for position" width="300"></td>
+    <td><img src="static/images/blockwise_cls_accuracy.png" alt="Linear probing for image class" width="300"></td>
+    </tr>
+   </table>
+
+    <p>
+      These results show that the spectral properties (mean eigenvalues) of a block's feature map and its ability to retrieve local
+      information (like texture or patch position) are correlated. The middle layers of the Dino models are responsible
+      for extracting local information from the input image patches as their feature map eigenvalues and localization accuracies are high (left and middle figures).
+      Conversely, the final layers of the ViT are responsible for semantic understanding, as their feature maps contain more global information,
+      seen by higher image-class accuracies (rightmost figure).
+
+    </p>
+
+    <p>
+      ExPLoRA amplifies the global information stored in each block's feature map towards the final layers of the ViT,
+      while preserving strong localization in the middle layers. This can also be seen in the attention maps below,
+      as ExPLoRA's attention highlights the central object more clearly.
+    </p>
+
+    <img src="static/images/explora_attention_viz.png" height="100%">
+    <div class="subtitle has-text-centered">
+    </div>
+
+    <p>
+      For more detailed analysis and experiments, please read our paper!
+    </p>
+
+  </div>
+</section>
+
+
+<!--<section class="section" id="Limitations">-->
+<!--  <div class="container is-max-desktop content">-->
+<!--    <h2 class="title">Limitations</h2>-->
+
+<!--    <p>-->
+<!--      TODO-->
+<!--    </p>-->
+
+
+<!--  </div>-->
+<!--</section>-->
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+<!--    <p>If you found our work helpful, please cite our paper!</p>-->
+
+    <pre><code>@article{khanna2024explora,
+  title={ExPLoRA: Parameter-Efficient Extended Pre-Training to Adapt Vision Transformers under Domain Shifts},
+  author={Khanna, Samar and Irgau, Medhanie and Lobell, David B and Ermon, Stefano},
+  journal={arXiv preprint arXiv:2406.10973},
+  year={2024}
+}</code></pre>
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <!-- <a class="icon-link"
+         href="https://homes.cs.washington.edu/~kpar/nerfies/videos/nerfies_paper.pdf">
+        <i class="fas fa-file-pdf"></i>
+      </a> -->
+      <!-- <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a> -->
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            This website is borrowed from the <a
+              href="https://github.com/nerfies/nerfies.github.io">source code</a> of the Nerfies website.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
