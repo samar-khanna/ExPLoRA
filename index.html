@@ -187,7 +187,7 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <img src="static/images/explora_arch.png" height="100%">
+      <img src="static/images/explora_arch.svg" height="100%">
     </img>
       <h2 class="subtitle has-text-centered">
         ExPLoRA creates state-of-the-art foundation models for new domains by extending unsupervised pre-training of ViTs (like DinoV2 and MAE) in a parameter-efficient manner.
@@ -284,7 +284,7 @@
             tasks using only a small fraction (0.1%-10%) of the original trainable weights. An
             under-explored question of PEFT is in extending the pre-training phase without
             supervised labels; that is, can we adapt a pre-trained foundation model to a new
-            domain via efficient self-supervised pre-training on this new domain? In this work,
+            domain via efficient self-supervised pre-training on this domain? In this work,
             we introduce ExPLoRA, a highly effective technique to improve transfer learning
             of pre-trained vision transformers (ViTs) under domain shifts. Initializing a ViT
             with pre-trained weights on large, natural-image datasets such as from DinoV2
@@ -293,11 +293,11 @@
             LoRA. We then fine-tune the resulting model only with LoRA on this new domain
             for supervised learning. Our experiments demonstrate state-of-the-art results on
             satellite imagery, even outperforming fully pre-training and fine-tuning ViTs. Using
-            the DinoV2 training objective, we demonstrate up to 7.5% improvement in linear
+            the DinoV2 training objective, we demonstrate up to 8% improvement in linear
             probing top-1 accuracy on downstream tasks while using <10% of the number
             of parameters that are used in prior fully-tuned state-of-the art approaches. Our
-            ablation studies confirm the efficacy of our approach over other baselines, including
-            PEFT and unfreezing more ViT blocks.
+            ablation studies confirm the efficacy of our approach over other baselines such as PEFT.
+            Code is available at <a href="https://github.com/samar-khanna/ExPLoRA">https://github.com/samar-khanna/ExPLoRA</a>.
           </p>
         </div>
       </div>
@@ -321,14 +321,19 @@
 <section class="section" id="Motivation">
   <div class="container is-max-desktop content">
     <h2 class="title">Motivation</h2>
-    <img src="static/images/explora_explainer.png" height="100%">
+    <!-- <img src="static/images/poster_fig1.svg" height="20%"> -->
+    <img src="static/images/poster_fig1.svg" style="max-width: 60%; height: auto; display: block; margin: auto;">
     <div class="subtitle has-text-centered">
     </div>
     <div class="content has-text-justified">
       <p>
-        ExPLoRA creates effective visual foundation models for new domains inexpensively, given existing pre-trained weights.
+        Pre-training foundation models on large, natural-image datasets such as DinoV2 or MAE is very <b>expensive</b>.
+        For example, pre-training a ViT-L DinoV2 from scratch required 96 A100-80GB GPUs!
+        Supervised learning via parameter-efficient fine-tuning (PEFT) updates a small fraction of the model's parameters to generalize pre-trained weights to downstream tasks.
+        This paradigm works well if the downstream datasets are similar and sufficiently in-distribution with the pre-training dataset.
+        However, PEFT struggles to adapt models to downstream datasets that exhibit a <i>large domain gap</i> from natural images, such as satellite or medical imagery.
       </p>
-      <p>
+      <!-- <p>
         Consider two faily different image domains, <i>D<sub>S</sub></i> and <i>D<sub>T</sub></i> (such as natural images vs satellite images).
         On the <b>left</b>, the traditional approach is to pre-train foundation models from scratch for each domain, yielding weights <i>W<sub>D<sub>S</sub></sub></i> and <i>W<sub>D<sub>T</sub></sub></i>.
         Then, these weights are fine-tuned via supervised learning on target datasets <i>i</i> to yield weights <i>&Delta;<sub>s<sub>i</sub></sub></i> and <i>&Delta;<sub>t<sub>i</sub></sub></i>
@@ -338,10 +343,30 @@
         ExPLoRA challenges this paradigm. On the <b>right</b>, our method initializes with <i>W<sub>D<sub>S</sub></sub></i> and
         learns unsupervised weights <i>&Delta;<sub>D<sub>T</sub></sub></i> for domain <i>D<sub>T</sub></i> in a parameter-efficient manner.
         These new weights <i>&Delta;<sub>D<sub>T</sub></sub></i> are then used for fine-tuning on specific datasets <i>t<sub>i</sub></i>, resulting in even better downstream performance than <i>W<sub>D<sub>T</sub></sub></i>.
-      </p>
+      </p> -->
 
-      <p>
+      <!-- <p>
         Our key insight is to find the right combination of parameter-efficient methods that work for <i>unsupervised</i> pre-training, rather than traditional supervised fine-tuning PEFT methods.
+      </p> -->
+    </div>
+    <img src="static/images/poster_fig2.svg" style="max-width: 75%; height: auto; display: block; margin: auto;">
+    <div class="subtitle has-text-centered">
+    </div>
+    <div class="content has-text-justified">
+      <p>
+        To address large domain gaps, prevailing approaches (eg: SatMAE, ScaleMAE, RayDINO) spend similarly large amounts of compute to pre-train new foundation models from scratch on the new domain.
+        This approach is expensive, difficult to scale to each new domain, and does not make use of the rich semantic information in the pre-trained weights from natural images.
+      </p>
+    </div>
+
+    <img src="static/images/poster_fig3.svg" style="max-width: 75%; height: auto; display: block; margin: auto;">
+    <div class="subtitle has-text-centered">
+    </div>
+    <div class="content has-text-justified">
+      <p>
+        <b>Instead, can we build foundation models for new domains without pre-training from scratch?</b>
+        We propose <b>ExPLoRA</b>, to conduct parameter-efficient continual pre-training on unlabeled image data of the new domain.
+        Our approach presents some key benefits: it is efficient and inexpensive in compute, and leverages knowledge transfer from natural images.
       </p>
     </div>
   </div>
@@ -352,16 +377,16 @@
     <h2 class="title">Method</h2>
 
     <p>
-      ExPLoRA works on a ViT with <i>L</i> layers as follows:
+      ExPLoRA works on a ViT with <i>L</i> layers as follows (see also our top-most figure):
     <ol>
-    <li>Initialize a frozen ViT with pre-trained weights <i>W<sub>D<sub>S</sub></sub></i> from source domains <i>D<sub>S</sub></i> (e.g., DinoV2 or MAE weights from natural images). </li>
+    <li>Initialize a frozen ViT with pre-trained weights <i>W<sub>S</sub></i> from source domains <i>S</i> (e.g., DinoV2 or MAE weights from natural images). </li>
     <li>Unfreeze all parameters of a subset <i>U</i> of the <i>L</i> ViT blocks (usually just 1 or 2 blocks).</li>
     <li>Apply LoRA with rank <i>r</i> on the <i>Q</i> and <i>V</i> weights in attention layers of all the remaining <i>L - U</i> frozen blocks. </li>
-    <li>Train these unfrozen parameters (collectively denoted as <i>&Delta;<sub>D<sub>T</sub></sub></i>) on an unlabeled dataset <i>X<sub>D<sub>T</sub></sub></i> of the target domain <i>D<sub>T</sub></i>.
-    Use the same unsupervised objective as what was used for <i>W<sub>D<sub>S</sub></sub></i> (e.g., DinoV2 or MAE).</li>
+    <li>Train these unfrozen parameters (collectively denoted as <i>&Delta;<sub>T</sub></i>) on an unlabeled dataset <i>X<sub>T</sub></i> of the target domain <i>T</i>.
+    Use the same unsupervised objective as what was used for <i>W<sub>S</sub></i> (e.g., DinoV2 or MAE).</li>
   </ol>
 
-    The output of this process is a new pre-trained foundation model for the target domain <i>D<sub>T</sub></i>,
+    The output of this process is a new pre-trained foundation model for the target domain <i>T</i>,
     that can then be used for feature extraction or for further fine-tuning on downstream tasks!
 
     </p>
@@ -517,11 +542,14 @@
   /* Table without borders (for the images) */
   .no-border-table {
     border-collapse: collapse;
-    width: 100%;
+    /* width: 100%; */
+    width: auto;
+    margin: auto;
   }
 
   .no-border-table, .no-border-table th, .no-border-table td {
     border: none;
+    text-align: center;
   }
 </style>
 
@@ -532,6 +560,20 @@
     <p>
       Using ExPLoRA, we are able to create state-of-the-art foundation models for satellite images, outperforming all
       prior fully-pretrained models on the <a href="https://github.com/fMoW">fMoW-RGB</a> benchmark.
+    </p>
+
+
+    <img src="static/images/table1.svg" style="max-width: 80%; height: auto; display: block; margin: auto;">
+    <div class="subtitle has-text-centered">
+      <br>
+      Figure 1: Fine-tuning results on fMoW-RGB.
+    </div>
+    <p>
+      In this figure, we demonstrate ExPLoRA's efficiency and performance on satellite image classification on the fMoW-RGB validation dataset.
+      ExPLoRA uses <b>8x-10x</b> less compute (in GPU hours) than full-pretraining methods and achieves a new state-of-the-art performance of <b>79.3%</b> when pre-trained with the DinoV2 objective.
+      Here, (LoRA-r8) stands for supervised fine-tuning a pre-trained ViT with LoRA rank 8.
+    </p>
+    <br>
 
       <table class="bordered-table">
       <thead>
@@ -590,12 +632,11 @@
         Table 1: Linear probing results on fMoW-RGB.
     </div>
 
-    Here, we show a sneak-peek of our results on the fMoW-RGB validation dataset. In Table 1, #Pre-train parameters refers
-    to the number of trainable parameters used on the new domain (i.e. satellite images of fMoW-RGB).
-    We show that our ExPLoRA-tuned ViT learns strong unsupervised representations-- with linear probing, we achieve
-    a large 8.28% improvement in top 1 accuracy over prior state-of-the-art fully pre-trained backbones,
+    <p>
+    We also show that our ExPLoRA-tuned ViT learns strong unsupervised representations-- with linear probing, we achieve
+    a large <b>8.28%</b> improvement in top 1 accuracy over prior state-of-the-art fully pre-trained backbones,
     while using a fraction of the ViT parameters.
-
+    Here in Table 1, #Pre-train parameters refers to the number of trainable parameters used on the new domain (i.e. satellite images of fMoW-RGB).
     </p>
 
     <p>
@@ -623,18 +664,21 @@
 
     <table class="no-border-table">
     <tr>
-    <td><img src="static/images/blockwise_eigenvalues.png" alt="Mean Eigenvalues" width="300"></td>
-    <td><img src="static/images/blockwise_pos_accuracy.png" alt="Linear probing for position" width="300"></td>
-    <td><img src="static/images/blockwise_cls_accuracy.png" alt="Linear probing for image class" width="300"></td>
-    </tr>
-   </table>
+       <td><img src="static/images/blockwise_eigenvalues.svg" alt="Mean Eigenvalues" style="width: 100%;"></td>
+       <td><img src="static/images/blockwise_std_eigenvalues.svg" alt="Mean Eigenvalues" style="width: 100%;"></td>
+     </tr>
+     <tr>
+       <td><img src="static/images/blockwise_pos_accuracy.svg" alt="Linear probing for position" style="width: 100%;"></td>
+       <td><img src="static/images/blockwise_cls_accuracy.svg" alt="Linear probing for image class" style="width: 100%;"></td>
+      </tr>
+     </table>
 
     <p>
       These results show that the spectral properties (mean eigenvalues) of a block's feature map and its ability to retrieve local
       information (like texture or patch position) are correlated. The middle layers of the Dino models are responsible
-      for extracting local information from the input image patches as their feature map eigenvalues and localization accuracies are high (left and middle figures).
+      for extracting local information from the input image patches as their feature map eigenvalues and localization accuracies are high (top-left and bottom-left plots).
       Conversely, the final layers of the ViT are responsible for semantic understanding, as their feature maps contain more global information,
-      seen by higher image-class accuracies (rightmost figure).
+      seen by higher image-class accuracies (bottom-right).
 
     </p>
 
@@ -644,7 +688,7 @@
       as ExPLoRA's attention highlights the central object more clearly.
     </p>
 
-    <img src="static/images/explora_attention_viz.png" height="100%">
+    <img src="static/images/explora_attention_viz.svg" height="100%">
     <div class="subtitle has-text-centered">
     </div>
 
@@ -671,13 +715,14 @@
 <section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-<!--    <p>If you found our work helpful, please cite our paper!</p>-->
+   <!-- <p>If you found our work helpful, please cite our paper!</p> -->
 
-    <pre><code>@article{khanna2024explora,
-  title={ExPLoRA: Parameter-Efficient Extended Pre-Training to Adapt Vision Transformers under Domain Shifts},
-  author={Khanna, Samar and Irgau, Medhanie and Lobell, David B and Ermon, Stefano},
-  journal={arXiv preprint arXiv:2406.10973},
-  year={2024}
+    <pre><code>@inproceedings{khanna2025explora,
+  title={Ex{PL}o{RA}: Parameter-Efficient Extended Pre-Training to Adapt Vision Transformers under Domain Shifts},
+  author={Samar Khanna and Medhanie Irgau and David B. Lobell and Stefano Ermon},
+  booktitle={Forty-second International Conference on Machine Learning},
+  year={2025},
+  url={https://openreview.net/forum?id=OtxLhobhwb}
 }</code></pre>
   </div>
 </section>
