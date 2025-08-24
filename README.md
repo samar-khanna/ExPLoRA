@@ -1,6 +1,7 @@
 # ExPLoRA (ICML 2025)
 **[Website](https://samar-khanna.github.io/ExPLoRA/)** | 
-**[Paper](https://arxiv.org/abs/2406.10973)** 
+**[Paper](https://arxiv.org/abs/2406.10973)**  |
+**[Video](https://slideslive.com/39039614)**  
 
 This is the official repository for the ICML 2025 paper 
 "_ExPLoRA: Parameter-Efficient Extended Pre-training to Adapt Vision Transformers under Domain Shifts_".  
