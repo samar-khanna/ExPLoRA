@@ -1,7 +1,8 @@
 # ExPLoRA (ICML 2025)
 **[Website](https://samar-khanna.github.io/ExPLoRA/)** | 
 **[Paper](https://arxiv.org/abs/2406.10973)** |
-**[Video](https://slideslive.com/39039614)**  
+**[Video](https://slideslive.com/39039614)**  |
+**[🤗 Checkpoints](https://huggingface.co/samarkhanna/ExPLoRA)**
 
 This is the official repository for the ICML 2025 paper 
 "_ExPLoRA: Parameter-Efficient Extended Pre-training to Adapt Vision Transformers under Domain Shifts_".  
@@ -11,6 +12,14 @@ Authors:
 [Medhanie Irgau](https://scholar.google.com/citations?user=WZ-NhOkAAAAJ), 
 [David B. Lobell](https://earth.stanford.edu/people/david-lobell#gs.5vndff), 
 [Stefano Ermon](https://cs.stanford.edu/~ermon/).
+
+## Overview
+
+ExPLoRA is a parameter-efficient method for adapting pre-trained Vision Transformers (ViT) to new domains using LoRA-based extended pre-training. Instead of training the full architecture, ExPLoRA freezes most of the backbone and trains low-rank adapters and a small subset of ViT blocks during self-supervised pre-training on target domain data.
+
+<p align="center">
+  <img src="https://samar-khanna.github.io/ExPLoRA/static/images/explora_arch.svg" width="600" style="background-color: white; padding: 10px; border-radius: 8px;"/>
+</p>
 
 
 ## Setup
@@ -65,7 +74,23 @@ Note that DinoV2 checkpoints don't contain the pre-trained Dino heads, so we mus
 On the other hand, MAE checkpoints do contain the pre-trained decoders which are part of the initialization during ExPLoRA.
 
 ## ExPLoRA Checkpoints
-_(Coming soon) Links to download our pre-trained models will be provided here._
+Pre-trained ExPLoRA checkpoints are available on 🤗 **[Hugging Face](https://huggingface.co/samarkhanna/ExPLoRA)**.
+
+### DinoV2 + ExPLoRA (fMoW RGB)
+
+| Description | ViT-B | ViT-L |
+|-------------|:-----:|:-----:|
+| DinoV2 teacher weights + ExPLoRA adapters | [ViT-B/14](https://huggingface.co/samarkhanna/ExPLoRA/resolve/main/explora_dinov2_fmow_rgb/explora_dinov2_vit_base_fmow_rgb.pth) | [ViT-L/14](https://huggingface.co/samarkhanna/ExPLoRA/resolve/main/explora_dinov2_fmow_rgb/explora_dinov2_vit_large_fmow_rgb.pth) |
+| Encoder-only weights | [ViT-B/14](https://huggingface.co/samarkhanna/ExPLoRA/resolve/main/explora_dinov2_fmow_rgb/explora_dinov2_vit_base_fmow_rgb_encoder_only.pth) | [ViT-L/14](https://huggingface.co/samarkhanna/ExPLoRA/resolve/main/explora_dinov2_fmow_rgb/explora_dinov2_vit_large_fmow_rgb_encoder_only.pth) |
+
+### MAE + ExPLoRA (fMoW Sentinel Multispectral)
+
+| Description | ViT-L |
+|-------------|:-----:|
+| MAE encoder & decoder weights + ExPLoRA adapters | [ViT-L/16](https://huggingface.co/samarkhanna/ExPLoRA/resolve/main/explora_mae_multispectral/explora_mae_fmow_sentinel.pth) |
+| Encoder-only weights | [ViT-L/16](https://huggingface.co/samarkhanna/ExPLoRA/resolve/main/explora_mae_multispectral/explora_mae_fmow_sentinel_encoder_only.pth) |
+
+> **Note:** All checkpoints have LoRA adapters **already merged** into the weights. The full checkpoints retain the separate `q_proj`, `k_proj`, `v_proj` layers (with merged LoRA) alongside the combined `qkv` weights for reference. The encoder-only checkpoints contain just the merged `qkv` weights, ready for downstream use.
 
 ## Acknowledgements
 Code from this repository borrows from the amazing contributions to the [DinoV2](https://github.com/facebookresearch/dinov2), [MAE](https://github.com/facebookresearch/mae), and [SatMAE](https://github.com/sustainlab-group/SatMAE) repositories.
