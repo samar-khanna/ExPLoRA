@@ -18,7 +18,7 @@ Authors:
 ExPLoRA is a parameter-efficient method for adapting pre-trained Vision Transformers (ViT) to new domains using LoRA-based extended pre-training. Instead of training the full architecture, ExPLoRA freezes most of the backbone and trains low-rank adapters and a small subset of ViT blocks during self-supervised pre-training on target domain data.
 
 <p align="center">
-  <img src="https://samar-khanna.github.io/ExPLoRA/static/images/explora_arch.svg" width="600" style="background-color: white; padding: 10px; border-radius: 8px;"/>
+  <img src="assets/explora_arch.svg" width="600"/>
 </p>
 
 
@@ -89,6 +89,7 @@ Pre-trained ExPLoRA checkpoints are available on 🤗 **[Hugging Face](https://h
 |-------------|:-----:|
 | MAE encoder & decoder weights + ExPLoRA adapters | [ViT-L/16](https://huggingface.co/samarkhanna/ExPLoRA/resolve/main/explora_mae_multispectral/explora_mae_fmow_sentinel.pth) |
 | Encoder-only weights | [ViT-L/16](https://huggingface.co/samarkhanna/ExPLoRA/resolve/main/explora_mae_multispectral/explora_mae_fmow_sentinel_encoder_only.pth) |
+
 
 > **Note:** All checkpoints have LoRA adapters **already merged** into the weights. The full checkpoints retain the separate `q_proj`, `k_proj`, `v_proj` layers (with merged LoRA) alongside the combined `qkv` weights for reference. The encoder-only checkpoints contain just the merged `qkv` weights, ready for downstream use.
 
