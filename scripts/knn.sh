@@ -44,7 +44,7 @@ cfg_file="linprobe/configs/fmow_vitl14.yaml"
 pretrained_weights="${base_dir}/explora_dinov2_vit_large_fmow_rgb_encoder_only.pth"
 
 # ============ Output directory ============
-out_dir="${base_experiment_dir}/linprobe_explora-rgb-blk23r64-bs256-epochs10"
+out_dir="${base_experiment_dir}/knn-explora_dino-rgb-blk23r64-bs256"
 
 # ============ Run ============
 export PYTHONPATH=.
