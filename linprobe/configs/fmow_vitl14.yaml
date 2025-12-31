@@ -1,0 +1,14 @@
+train:
+  batch_size_per_gpu: 32
+  dataset_path: fmow:data_and_checkpoints/fmow_csvs/train_62classes.csv
+student:
+  arch: vit_large
+  patch_size: 14
+  drop_path_rate: 0.0
+  ffn_layer: mlp
+  block_chunks: 0
+  checkpoint_key: model  # assumes you are using explora_dinov2_vit_large_fmow_rgb_encoder_only.pth
+  # checkpoint_key: teacher  # assumes you are using explora_dinov2_vit_large_fmow_rgb.pth
+crops:
+  local_crops_size: 98
+  global_crops_size: 224

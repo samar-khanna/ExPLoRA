@@ -34,7 +34,7 @@ This repository is organized via self-contained directories as follows:
 - `dinov2/`: ExPLoRA self-supervised pre-training with DINOv2.
 - `mae/`: ExPLoRA self-supervised pre-training with MAE.
 - `finetune/`: LoRA or full fine-tuning of pre-trained checkpoints on supervised downstream datasets.
-- `linprobe/`: (Coming soon) Linear probing of pre-trained checkpoints on supervised downstream datasets .
+- `linprobe/`: Linear probing or KNN of pre-trained checkpoints on supervised downstream datasets.
 - `scripts/`: Example shell scripts to run pre-training and fine-tuning.
 
 We suggest creating a `data_and_checkpoints/` directory in the repository.
@@ -54,6 +54,8 @@ The `scripts/` directory contains example scripts for pre-training with ExPLoRA 
 - **Fine-tuning (RGB):** `scripts/finetune.sh`
 - **Fine-tuning (Multi-spectral):** `scripts/finetune_group_channel.sh`
 - **Fine-tuning (Temporal):** `scripts/finetune_temporal.sh`
+- **Linear probing (RGB):** `scripts/linprobe.sh`
+- **KNN (RGB):** `scripts/knn.sh`
 
 Please see the scripts for details on the arguments.
 
